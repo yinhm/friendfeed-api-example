@@ -1,0 +1,12 @@
+application: your-app-id
+version: 1
+runtime: python
+api_version: 1
+
+handlers:
+- url: /robots.txt
+  static_files: robots.txt
+  upload: robots.txt
+
+- url: /.*
+  script: application.py

@@ -352,6 +352,21 @@ def get_oauth_authorization_url(request_token):
         urllib.urlencode(dict(oauth_token=request_token["key"]))
 
 
+def get_oauth_authentication_url(request_token):
+    """Returns the FriendFeed authentication URL for the given request token.
+
+    The user should be directed to this URL to authorize a request token.
+    After the user authorizes a token, the user will be redirected to the
+    callback URL you specified when you registered your FriendFeed API
+    application at http://friendfeed.com/api/register. FriendFeed does
+    not support the oauth_callback argument.
+
+    See http://oauth.net/core/1.0/#auth_step2
+    """
+    return _FRIENDFEED_OAUTH_BASE + "/authenticate?" + \
+        urllib.urlencode(dict(oauth_token=request_token["key"]))
+
+
 def get_oauth_access_token_url(consumer_token, request_token):
     """Returns the Access Token URL for the given authorized request token.
 

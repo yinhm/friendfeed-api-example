@@ -79,7 +79,7 @@ class FriendFeed(object):
     def set_oauth(self, consumer_token, access_token):
         """Sets the OAuth parameters for this session."""
         self.consumer_token = consumer_token
-        self.access_token = access_tokne
+        self.access_token = access_token
 
     def fetch_feed(self, feed_id, **args):
         """Fetches the feed with the given ID, e.g., "bret" or "home"

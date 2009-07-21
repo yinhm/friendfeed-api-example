@@ -17,7 +17,6 @@
 import base64
 import binascii
 import Cookie
-import Crypto.Cipher.Blowfish
 import email.utils
 import friendfeed
 import functools
@@ -56,7 +55,11 @@ def authenticated(method):
                 return
             self.redirect("/oauth/authorize")
             return
-        key, secret, username = cookie_val.split("|")
+        try:
+            key, secret, username = cookie_val.split("|")
+        except:
+            self.redirect("/oauth/authorize")
+            return
         self.friendfeed = friendfeed.FriendFeed(
             FRIENDFEED_API_TOKEN, dict(key=key, secret=secret))
         self.friendfeed_username = username
@@ -199,22 +202,13 @@ class OAuthAuthorizeHandler(webapp.RequestHandler):
         token = friendfeed.fetch_oauth_request_token(FRIENDFEED_API_TOKEN)
         data = "|".join([token["key"], token["secret"]])
         set_cookie(self.response, "FF_API_REQ", data)
-        self.redirect(friendfeed.get_oauth_authorization_url(token))
+        self.redirect(friendfeed.get_oauth_authentication_url(token))
 
 
 def set_cookie(response, name, value, domain=None, path="/", expires=None):
-    """Encrypts, signs and generates cookie for the give name/value.
-
-    We use the FriendFeed API token for encryption since it is different for
-    every app (so people using this example don't accidentally all use the
-    same secret).
-    """
+    """Generates and signs a cookie for the give name/value"""
     timestamp = str(int(time.time()))
-    aes = Crypto.Cipher.Blowfish.new(
-        binascii.a2b_hex(FRIENDFEED_API_TOKEN["secret"]),
-        Crypto.Cipher.Blowfish.MODE_ECB)
-    value += " " * (8 - len(value) % 8)
-    value = base64.b64encode(aes.encrypt(value))
+    value = base64.b64encode(value)
     signature = cookie_signature(value, timestamp)
     cookie = Cookie.BaseCookie()
     cookie[name] = "|".join([value, timestamp, signature])
@@ -227,7 +221,7 @@ def set_cookie(response, name, value, domain=None, path="/", expires=None):
 
 
 def parse_cookie(value):
-    """Parses, verifies, and decrypts a cookie value from set_cookie."""
+    """Parses and verifies a cookie value from set_cookie"""
     if not value: return None
     parts = value.split("|")
     if len(parts) != 3: return None
@@ -238,11 +232,8 @@ def parse_cookie(value):
     if timestamp < time.time() - 30 * 86400:
         logging.warning("Expired cookie %r", value)
         return None
-    aes = Crypto.Cipher.Blowfish.new(
-        binascii.a2b_hex(FRIENDFEED_API_TOKEN["secret"]),
-        Crypto.Cipher.Blowfish.MODE_ECB)
     try:
-        return aes.decrypt(base64.b64decode(parts[0])).strip()
+        return base64.b64decode(parts[0]).strip()
     except:
         return None
 

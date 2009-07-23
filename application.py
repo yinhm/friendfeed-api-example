@@ -93,6 +93,7 @@ class FeedHandler(webapp.RequestHandler):
             request=self.request,
             feed_list=feed_list,
             feed=feed,
+            friendfeed_username=getattr(self, "friendfeed_username", None),
         )))
 
 

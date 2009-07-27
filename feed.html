@@ -258,7 +258,7 @@
             </div>
             <div class="title">{{ entry.body }}</div>
             {% if entry.thumbnails %}
-              <div class="media">{% for thumbnail in entry.thumbnails %}<a href="{{ thumbnail.link|escape }}"><img src="{{ thumbnail.url|escape }}" style="width:{{ thumbnail.width }}px;height:{{ thumbnail.height }}px" alt=""/></a>{% endfor %}</div>
+              <div class="media">{% for thumbnail in entry.thumbnails %}<a href="{{ thumbnail.link|escape }}"><img src="{{ thumbnail.url|escape }}"{% if thumbnail.width and thumbnail.height %} style="width:{{ thumbnail.width }}px;height:{{ thumbnail.height }}px"{% endif %} alt=""/></a>{% endfor %}</div>
             {% endif %}
             <div class="info">
               <a href="/{{ entry.id }}" class="permalink">{{ entry.date|timesince }} ago</a>

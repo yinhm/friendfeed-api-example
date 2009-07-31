@@ -391,6 +391,27 @@ def get_oauth_access_token_url(consumer_token, request_token):
     return url + "?" + urllib.urlencode(args)
 
 
+def get_installed_app_access_token_url(consumer_token, username, password):
+    """Returns the installed application Access Token URL for the 
+    given username and password.
+
+    See http://friendfeed.com/api/documentation#authentication
+    """
+    url = _FRIENDFEED_OAUTH_BASE + "/ia_access_token"
+    args = dict(
+        oauth_consumer_key=consumer_token["key"],
+        ff_username=username,
+        ff_password=password,
+        oauth_signature_method="HMAC-SHA1",
+        oauth_timestamp=str(int(time.time())),
+        oauth_nonce=binascii.b2a_hex(uuid.uuid4().bytes),
+        oauth_version="1.0",
+    )
+    signature = _oauth_signature(consumer_token, "GET", url, args)
+    args["oauth_signature"] = signature
+    return url + "?" + urllib.urlencode(args)
+
+
 def get_oauth_resource_request_parameters(url, consumer_token, access_token,
                                           parameters={}, method="GET"):
     """Returns the OAuth parameters as a dict for the given resource request.
@@ -433,6 +454,18 @@ def fetch_oauth_access_token(consumer_token, request_token):
     See get_oauth_access_token_url().
     """
     url = get_oauth_access_token_url(consumer_token, request_token)
+    request = urllib2.urlopen(url)
+    token = _oauth_parse_response(request.read())
+    request.close()
+    return token
+
+
+def fetch_installed_app_access_token(consumer_token, username, password):
+    """Fetches an access token for the given username and password.
+
+    See get_installed_app_access_token_url().
+    """
+    url = get_installed_app_access_token_url(consumer_token, username, password)
     request = urllib2.urlopen(url)
     token = _oauth_parse_response(request.read())
     request.close()

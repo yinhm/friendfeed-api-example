@@ -14,7 +14,15 @@
 # License for the specific language governing permissions and limitations
 # under the License.
 
-"""An implementation of the FriendFeed API (http://friendfeed.com/api/)."""
+"""A Python implementation of the FriendFeed API v2
+
+Documentation is available at http://friendfeed.com/api/documentation.
+For a complete example application using this library, see
+http://code.google.com/p/friendfeed-api-example/.
+
+For version 1 of the API, see
+http://code.google.com/p/friendfeed-api/wiki/ApiDocumentation.
+"""
 
 import binascii
 import cgi
@@ -66,7 +74,7 @@ class FriendFeed(object):
         some feeds and to post messages, you must provide both
         oauth_consumer_token and oauth_access_token. They should both be
         dictionaries of the form {"key": "...", "secret": "..."}. Learn
-        more about OAuth at http://friendfeed.com/api/oauth.
+        more about OAuth at http://friendfeed.com/api/documentation#oauth.
 
         You can register your application to receive your FriendFeed OAuth
         Consumer Key at http://friendfeed.com/api/register. To fetch request
